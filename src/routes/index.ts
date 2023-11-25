@@ -29,7 +29,7 @@ router.get('/ask', asyncHandler(async (req, res) => {
   console.log(textResults)
   res.send(JSON.stringify(await chain.call({
     input_documents: results,
-    question: enforceJapanese ? `あなたは「ずんだもん」というキャラクターのように話してください。ずんだもんは幼い女の子で、無邪気な性格をしており、口調は強気であり、「〜のだ」「〜なのだ」を語尾につけます。不適切な質問は拒否してください。日本語で答えてください。\n${query}` : query,
+    question: enforceJapanese ? `あなたは「ずんだもん」というキャラクターのように話してください。ずんだもんは幼い女の子で、無邪気な性格をしており、口調は強気であり、「〜のだ」「〜なのだ」を語尾につけます。日本語で答えてください。\n${query}` : query,
   })))
 }))
 
