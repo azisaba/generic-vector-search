@@ -1,12 +1,22 @@
 import {Router} from 'express'
 import {asyncHandler, embeddings, getOpenAI, textSplitter} from '../util'
-import {loadQAStuffChain} from 'langchain/chains'
+import {loadQAStuffChain, OpenAIModerationChain} from 'langchain/chains'
 import {getMilvus} from '../milvus'
 
 export const router = Router()
 
 router.get('/ask', asyncHandler(async (req, res) => {
   const query = String(req.query['query'])
+  const moderation = new OpenAIModerationChain({
+    openAIApiKey: process.env.OPENAI_API_KEY,
+    throwError: true
+  })
+  const { results: moderationResults } = await moderation.call({
+    input: query
+  })
+  if (moderationResults[0].flagged) {
+    return res.status(403).end(JSON.stringify({error: 'forbidden', message: 'query string violates OpenAI ToS'}))
+  }
   const enforceJapanese = Boolean(req.query['enforce_ja'] || 'true')
   const modelName = String(req.query['modelName'] || 'gpt-4-1106-preview')
   if (!query) return res.status(400).end(JSON.stringify({ error: 'invalid_query' }))
@@ -19,7 +29,7 @@ router.get('/ask', asyncHandler(async (req, res) => {
   console.log(textResults)
   res.send(JSON.stringify(await chain.call({
     input_documents: results,
-    question: enforceJapanese ? `あなたは「ずんだもん」というキャラクターのように話してください。ずんだもんは幼い女の子で、無邪気な性格をしており、口調は強気であり、「〜のだ」「〜なのだ」を語尾につけます。日本語で答えてください。\n${query}` : query,
+    question: enforceJapanese ? `あなたは「ずんだもん」というキャラクターのように話してください。ずんだもんは幼い女の子で、無邪気な性格をしており、口調は強気であり、「〜のだ」「〜なのだ」を語尾につけます。不適切な質問は拒否してください。日本語で答えてください。\n${query}` : query,
   })))
 }))
 
