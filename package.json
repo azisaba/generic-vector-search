@@ -1,0 +1,23 @@
+{
+  "name": "generic-vector-search",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "compile": "tsc",
+    "dev": "tsc && node dist/app.js"
+  },
+  "dependencies": {
+    "@zilliz/milvus2-sdk-node": "^2.3.4",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "langchain": "^0.0.197-rc.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.2"
+  }
+}
