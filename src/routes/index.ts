@@ -24,7 +24,7 @@ router.get('/ask', asyncHandler(async (req, res) => {
   if (!top_k || isNaN(top_k)) return res.status(400).end(JSON.stringify({ error: 'invalid_top_k' }))
   const openAI = getOpenAI(modelName)
   const chain = loadQAStuffChain(openAI)
-  const results = await getMilvus(embeddings()).similaritySearch(query, top_k)
+  const results = await getMilvus(embeddings()).similaritySearch(String(req.query['sq'] || query), top_k)
   const textResults = results.map(e => e.pageContent)
   console.log(textResults)
   res.send(JSON.stringify(await chain.call({
