@@ -54,6 +54,16 @@ router.post('/insert', asyncHandler(async (req, res) => {
   res.status(200).end(JSON.stringify({success: true, inserted: texts.length}))
 }))
 
+// router.post('/delete', asyncHandler(async (req, res) => {
+//   const id = String(req.query['id'])
+//   if (!id || id === 'undefined') {
+//     return res.status(400).end(JSON.stringify({error: 'invalid_request', message: '"id" is not specified'}))
+//   }
+//   await getMilvus(embeddings()).delete({
+//     filter: ''
+//   })
+// }))
+
 router.get('/delete_everything', asyncHandler(async (req, res) => {
   const plsDelete = req.query['query'] === 'DELETE'
   if (!plsDelete) return res.status(400).end(JSON.stringify({error: 'unsafe_operation'}))
