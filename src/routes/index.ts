@@ -17,7 +17,7 @@ router.get('/ask', asyncHandler(async (req, res) => {
   if (moderationResults[0].flagged) {
     return res.status(403).end(JSON.stringify({error: 'forbidden', message: 'query string violates OpenAI ToS'}))
   }
-  const enforceJapanese = Boolean(req.query['enforce_ja'] || 'true')
+  const enforceJapanese = (req.query['enforce_ja'] || 'true') === 'true'
   const modelName = String(req.query['modelName'] || 'gpt-4-1106-preview')
   if (!query) return res.status(400).end(JSON.stringify({ error: 'invalid_query' }))
   const top_k = parseInt(String(req.query['top_k']))
