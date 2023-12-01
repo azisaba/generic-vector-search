@@ -66,7 +66,12 @@ export const createCollection = async (documents: Document[]) => {
       }
     }
   })
-  getMilvus(embeddings()).client.createCollection({
+  const milvus = getMilvus(embeddings()).client
+  const result = await milvus.hasCollection({
+    collection_name: process.env.COLLECTION_NAME,
+  })
+  if (result.value) return
+  milvus.createCollection({
     collection_name: process.env.COLLECTION_NAME,
     primary_field_name: 'langchain_primaryid',
     fields: [
