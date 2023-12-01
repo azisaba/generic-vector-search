@@ -44,9 +44,12 @@ router.post('/insert', asyncHandler(async (req, res) => {
     }
     const split = await textSplitter.splitText(String(entry.pageContent || entry.text))
     const metadata = entry.metadata || {}
+    if (entry.text) {
+      metadata['text'] = entry.text
+    }
     for (let i = 0; i < split.length; i++) {
       const text = split[i]
-      texts.push({pageContent: text, metadata: {id: `${id}-${i}`, text: entry.text, ...metadata}})
+      texts.push({pageContent: text, metadata: {id: `${id}-${i}`, ...metadata}})
     }
   }
   if (!dryRun) {
