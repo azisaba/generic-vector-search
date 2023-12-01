@@ -35,21 +35,22 @@ router.get('/ask', asyncHandler(async (req, res) => {
 
 router.post('/insert', asyncHandler(async (req, res) => {
   const dryRun = !!req.query['dryRun']
-  const array: Array<{ id: string, text: string }> = req.body
-  const texts: Array<{ id: string, text: string }> = []
+  const array: Array<{ id: string, text?: string, pageContent?: string, metadata?: Record<string, any> }> = req.body
+  const texts: Array<{ pageContent: string, metadata: Record<string, any> }> = []
   for (const entry of array) {
     const id = String(entry.id)
     if (id.length > 200) {
       return res.status(400).end(JSON.stringify({error: 'invalid_request', message: `'id' is too long (${id.length} > 200)`}))
     }
-    const split = await textSplitter.splitText(String(entry.text))
+    const split = await textSplitter.splitText(String(entry.pageContent || entry.text))
+    const metadata = entry.metadata || {}
     for (let i = 0; i < split.length; i++) {
       const text = split[i]
-      texts.push({id: `${id}-${i}`, text})
+      texts.push({pageContent: text, metadata: {id: `${id}-${i}`, text: entry.text, ...metadata}})
     }
   }
   if (!dryRun) {
-    await getMilvus(embeddings()).addDocuments(texts.map(e => ({pageContent: e.text, metadata: {id: e.id}})))
+    await getMilvus(embeddings()).addDocuments(texts)
   }
   res.status(200).end(JSON.stringify({success: true, inserted: texts.length}))
 }))
