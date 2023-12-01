@@ -3,7 +3,7 @@ import {router as indexRouter} from './routes/'
 import {config} from 'dotenv'
 import {getMilvus} from './milvus'
 import {ErrorRequestHandler} from 'express'
-import {embeddings} from './util'
+import {asyncHandler, embeddings} from './util'
 
 config()
 
@@ -13,6 +13,15 @@ app.use(express.json({
   limit: '1000gb',
 }))
 app.use(express.urlencoded({ extended: false }))
+
+app.get('/query', asyncHandler(async (req, res) => {
+  const query = String(req.query['query'])
+  if (!query || query === 'undefined') return res.status(400).end(JSON.stringify({ error: 'invalid_query' }))
+  const top_k = parseInt(String(req.query['top_k']))
+  if (!top_k || isNaN(top_k)) return res.status(400).end(JSON.stringify({ error: 'invalid_top_k' }))
+  const results = await getMilvus(embeddings()).similaritySearch(query, top_k)
+  res.send(JSON.stringify({ results }))
+}))
 
 app.use((req, res, next) => {
   if (process.env.SECRET && req.header('Authorization') !== process.env.SECRET) {
