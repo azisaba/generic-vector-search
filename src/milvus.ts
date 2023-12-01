@@ -25,6 +25,11 @@ export const getMilvus = (embeddings: OpenAIEmbeddings) => {
       milvus.client.dropCollection({collection_name: process.env.COLLECTION_NAME})
         .then(e => console.log('Dropped collection ' + process.env.COLLECTION_NAME, e))
     }
+    milvus.indexCreateParams = {
+      index_type: process.env.INDEX_TYPE,
+      metric_type: process.env.METRIC_TYPE,
+      params: process.env.INDEX_PARAMS,
+    }
   }
   return milvus
 }
