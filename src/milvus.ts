@@ -21,7 +21,7 @@ export const getMilvus = (embeddings: OpenAIEmbeddings) => {
         password: process.env.MILVUS_PASSWORD || undefined,
         ssl: process.env.MILVUS_SSL === 'true',
       },
-      textFieldMaxLength: 3000,
+      textFieldMaxLength: 10000,
       collectionName: process.env.COLLECTION_NAME,
     })
   }
