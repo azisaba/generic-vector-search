@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: false }))
 
 app.get('/query', asyncHandler(async (req, res) => {
   const query = String(req.query['query'])
-  if (!query || query === 'undefined') return res.status(400).end(JSON.stringify({ error: 'invalid_query' }))
+  if (!query || query === 'undefined' || query.length > 200) return res.status(400).end(JSON.stringify({ error: 'invalid_query' }))
   const top_k = parseInt(String(req.query['top_k']))
   if (!top_k || isNaN(top_k)) return res.status(400).end(JSON.stringify({ error: 'invalid_top_k' }))
   const results = await getMilvus(embeddings()).similaritySearch(query, top_k)
