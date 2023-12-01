@@ -95,5 +95,7 @@ export const createCollection = async (documents: Document[]) => {
       },
       ...fields,
     ]
-  }).then(res => console.log('createCollection result', res))
+  }).then(res => {
+    if (process.env.DELETE_MILVUS_COLLECTION === 'true') console.log('createCollection result', res)
+  })
 }

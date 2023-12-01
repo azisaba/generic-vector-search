@@ -1,7 +1,7 @@
 import {Router} from 'express'
 import {asyncHandler, embeddings, getOpenAI, textSplitter} from '../util'
 import {loadQAStuffChain, OpenAIModerationChain} from 'langchain/chains'
-import {getMilvus} from '../milvus'
+import {createCollection, getMilvus} from '../milvus'
 
 export const router = Router()
 
@@ -50,6 +50,7 @@ router.post('/insert', asyncHandler(async (req, res) => {
     }
   }
   if (!dryRun) {
+    await createCollection(texts)
     await getMilvus(embeddings()).addDocuments(texts)
   }
   res.status(200).end(JSON.stringify({success: true, inserted: texts.length}))
