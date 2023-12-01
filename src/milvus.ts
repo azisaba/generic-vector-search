@@ -95,12 +95,23 @@ export const createCollection = async (documents: Document[]) => {
         description: 'Vector field',
         data_type: DataType.FloatVector,
         type_params: {
-          dim: '1536'
+          dim: process.env.COLLECTION_DIMENSIONS,
         },
       },
       ...fields,
     ]
   }).then(res => {
     if (process.env.DELETE_MILVUS_COLLECTION === 'true') console.log('createCollection result', res)
+  })
+  milvus.createIndex({
+    collection_name: process.env.COLLECTION_NAME,
+    field_name: 'langchain_vector',
+    extra_params: {
+      index_type: process.env.INDEX_TYPE,
+      metric_type: process.env.METRIC_TYPE,
+      params: process.env.INDEX_PARAMS,
+    }
+  }).then(res => {
+    if (process.env.DELETE_MILVUS_COLLECTION === 'true') console.log('createIndex result', res)
   })
 }
