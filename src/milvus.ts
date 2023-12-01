@@ -71,7 +71,7 @@ export const createCollection = async (documents: Document[]) => {
     collection_name: process.env.COLLECTION_NAME,
   })
   if (result.value) return
-  milvus.createCollection({
+  await milvus.createCollection({
     collection_name: process.env.COLLECTION_NAME,
     primary_field_name: 'langchain_primaryid',
     fields: [
@@ -103,7 +103,7 @@ export const createCollection = async (documents: Document[]) => {
   }).then(res => {
     if (process.env.DELETE_MILVUS_COLLECTION === 'true') console.log('createCollection result', res)
   })
-  milvus.createIndex({
+  await milvus.createIndex({
     collection_name: process.env.COLLECTION_NAME,
     field_name: 'langchain_vector',
     extra_params: {
