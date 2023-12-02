@@ -20,7 +20,8 @@ app.get('/query', asyncHandler(async (req, res) => {
   const top_k = parseInt(String(req.query['top_k']))
   if (!top_k || isNaN(top_k)) return res.status(400).end(JSON.stringify({ error: 'invalid_top_k' }))
   console.log('query', query)
-  const results = await getMilvus(embeddings()).similaritySearchWithScore(query, top_k)
+  const filter = String(req.query['filter'] || '') || undefined
+  const results = await getMilvus(embeddings()).similaritySearchWithScore(query, top_k, filter)
   console.log('results', results)
   res.setHeader('Access-Control-Allow-Origin', '*')
     .send(JSON.stringify({ results: results.map(([doc, score]) => ({score, ...doc})) }))
