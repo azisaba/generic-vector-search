@@ -15,6 +15,9 @@ app.use(express.json({
 app.use(express.urlencoded({ extended: false }))
 
 app.get('/query', asyncHandler(async (req, res) => {
+  if (process.env.PROTECT_QUERY === 'true' && process.env.SECRET && req.header('Authorization') !== process.env.SECRET) {
+    return res.status(403).end(JSON.stringify({ error: 'invalid_secret' }))
+  }
   const query = String(req.query['query'])
   if (!query || query === 'undefined' || query.length > 200) return res.status(400).end(JSON.stringify({ error: 'invalid_query' }))
   const top_k = parseInt(String(req.query['top_k']))
